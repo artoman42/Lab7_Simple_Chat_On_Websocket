@@ -1,52 +1,18 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Корпоративний чат</title>
-</head>
-<body>
-  <h1>Корпоративний чат</h1>
-  <div id="messages"></div>
-  <form id="message-form">
-    <input type="text" id="message-input" />
-    <button type="submit">Надіслати</button>
-  </form>
-
-  <script>
-    const socket = new WebSocket('ws://localhost:3000');
-
-    socket.onopen = () => {
-      console.log('Connected to server');
-    };
-
-    socket.onmessage = (event) => {
-      const message = event.data;
-      displayMessage(message);
-    };
-
-    socket.onclose = () => {
-      console.log('Disconnected from server');
-    };
-
-    function sendMessage(message) {
-      socket.send(message);
-    }
-
-    function displayMessage(message) {
-      const messagesContainer = document.getElementById('messages');
-      const messageElement = document.createElement('div');
-      messageElement.textContent = message;
-      messagesContainer.appendChild(messageElement);
-    }
-
-    const messageForm = document.getElementById('message-form');
-    const messageInput = document.getElementById('message-input');
-
-    messageForm.addEventListener('submit', (event) => {
-      event.preventDefault();
-      const message = messageInput.value;
-      sendMessage(message);
-      messageInput.value = '';
-    });
-  </script>
-</body>
+  <head>
+    <title>WebSocket Chat</title>
+    <style>
+      #messages {
+        height: 200px;
+        overflow-y: scroll;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="messages"></div>
+    <input type="text" id="messageInput" placeholder="Type your message">
+    <button id="sendButton">Send</button>
+    <script src="client.js"></script>
+  </body>
 </html>

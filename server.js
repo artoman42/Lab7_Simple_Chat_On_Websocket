@@ -1,39 +1,24 @@
 const express = require('express');
-const WebSocket = require('ws');
+const expressWs = require('express-ws');
 const path = require('path');
 
 const app = express();
-const port = 3000;
+const wsInstance = expressWs(app);
+const aWss = wsInstance.getWss();
 
-// Статична тека для статичних файлів
+
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Створення сервера Express
-const server = app.listen(port, () => {
-  console.log(`Server started on port ${port}`);
-});
-
-// Створення WebSocket-сервера на основі сервера Express
-const wss = new WebSocket.Server({ server });
-
-// Обробка підключення до WebSocket-сервера
-wss.on('connection', (ws) => {
-  console.log('Client connected');
-
-  // Обробка повідомлень від клієнта
-  ws.on('message', (message) => {
-    console.log(`Received message: ${message}`);
-
-    // Надіслати повідомлення всім підключеним клієнтам
-    wss.clients.forEach((client) => {
-      if (client !== ws && client.readyState === WebSocket.OPEN) {
-        client.send(message);
+app.ws('/chat', (ws, req) => {
+  ws.on('message', (msg) => {
+    aWss.clients.forEach((client) => {
+      if (client.readyState === client.OPEN) {
+        client.send(msg);
       }
     });
   });
+});
 
-  // Обробка закриття з'єднання клієнтом
-  ws.on('close', () => {
-    console.log('Client disconnected');
-  });
+app.listen(3000, () => {
+  console.log('Server started on port 3000');
 });
